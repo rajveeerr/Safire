@@ -156,15 +156,49 @@ const injectShowButton = () => {
     profileHeader.appendChild(warningDiv);
   }
 }
+const injectProfileTag = () => {
+  const profileHeader = document.querySelector(
+    ".ember-view"
+  )
+    const tagContainer = document.createElement("div");
+    tagContainer.id = "profile-tag";
+    tagContainer.classList.add("profile-tag-style");
+
+    const tagContent = document.createElement("span");
+    tagContent.innerText = "🚫 Harassment Detected";
+    tagContent.classList.add("harrasment-text-style");
+
+    tagContainer.appendChild(tagContent);
+
+    profileHeader.appendChild(tagContainer);
+}
+
+
+
+
+const checkForHarassmentMessages = () => {
+  const chatPreviews = document.querySelectorAll(
+    ".msg-s-event-listitem__body"
+  )
+
+  return Array.from(chatPreviews).some((preview) => {
+    const message = preview.innerHTML || ""
+    return detectHarassment(message)
+  })
+}
 
 
 
 const observeMutations = () => {
   const observer = new MutationObserver(() => {
+    const hasHarassmentMessage = checkForHarassmentMessages();
+    
     hideAbusiveMessagesPreview()
-    // hideAbusivePersonChatPreview()
     hideAbusiveMessagesInbox()
-    injectShowButton()
+    
+    if (hasHarassmentMessage) {
+      injectShowButton()
+    }
   })
 
   observer.observe(document.body, {
@@ -175,7 +209,6 @@ const observeMutations = () => {
 
   observer.takeRecords()
 }
-
 
 const ContentScript = () => {
   useEffect(() => {
