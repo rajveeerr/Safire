@@ -3,7 +3,8 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const router = express.Router();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-console.log("/api/v1/moderation/detect-harassment");
+
+// route: "/api/v1/moderation/detect-harassment" -> payload: {username: "", message: "", platform: ""}
 
 router.post('/detect-harassment', async (req, res) => {
   try {
@@ -36,8 +37,11 @@ router.post('/detect-harassment', async (req, res) => {
         "isSexuallyExplicit": true/false,
         "isPotentiallyOffensive": true/false,
         "analysis": "detailed analysis text"
-      }`
-    
+      }
+    This is the platform where user has received the message: ${platform}.
+    Also do these harrassment checks based on platform and situation, like no one should ask any user about they have a
+    boyfriend or not, since linkedin is a professional platform, but this same thing might be appropriate for instagram.
+    `  
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(`${systemPrompt}\n\nMessage to analyze: ${message}`);
