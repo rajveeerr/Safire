@@ -72,7 +72,7 @@ const hideAbusivePersonChatPreview = () => {
   )
 
   chatPreviews.forEach((preview) => {
-    const message = preview.innerHTML || ""
+    const message = preview.innerHTML || "" 
 
     if (detectHarassment(message)) {
       const parentContainer = preview.closest(
@@ -102,6 +102,8 @@ const hideAbusivePersonChatPreview = () => {
 // }
 
 //function to add UI in message box
+
+
 
 const injectShowButton = () => {
   const profileHeader = document.querySelector(
