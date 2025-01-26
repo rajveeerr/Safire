@@ -117,16 +117,39 @@ const injectShowButton = () => {
     warningText.innerText = "⚠️ Our AI has detected harassment messages in this conversation. The messages are hidden for your safety.";
     warningText.classList.add("warning-text-style");
 
+    const buttonsContainer = document.createElement("div");
+    buttonsContainer.classList.add("buttons-container");
+
     const showMessagesBtn = document.createElement("button");
     showMessagesBtn.id = "show-messages-btn";
     showMessagesBtn.innerText = "Show Messages";
     showMessagesBtn.classList.add("show-messages-btn-style");
     showMessagesBtn.onclick = () => {
-        alert("Messages will be shown!"); // Replace this with logic to reveal messages
+        alert("Messages will be shown!"); // Replace with actual reveal messages logic
     };
 
+    const generateReportBtn = document.createElement("button");
+    generateReportBtn.id = "generate-report-btn";
+    generateReportBtn.innerText = "Legal Report";
+    generateReportBtn.classList.add("generate-report-btn-style");
+    generateReportBtn.onclick = () => {
+        alert("Generating legal harassment report..."); // Replace with actual report generation logic
+    };
+
+    const hideUserBtn = document.createElement("button");
+    hideUserBtn.id = "hide-user-btn";
+    hideUserBtn.innerText = "Hide User";
+    hideUserBtn.classList.add("hide-user-btn-style");
+    hideUserBtn.onclick = () => {
+        alert("Hiding user..."); // Replace with actual user hiding logic
+    };
+
+    buttonsContainer.appendChild(showMessagesBtn);
+    buttonsContainer.appendChild(generateReportBtn);
+    buttonsContainer.appendChild(hideUserBtn);
+
     warningDiv.appendChild(warningText);
-    warningDiv.appendChild(showMessagesBtn);
+    warningDiv.appendChild(buttonsContainer);
 
     profileHeader.appendChild(warningDiv);
   }
