@@ -1,6 +1,7 @@
 const express = require('express');
 
-const analyze = require('./detect-harassment');
+const moderationRoutes = require('./moderation/detect-harassment');
+const userRoutes = require('./users/user');
 
 const router = express.Router();
 
@@ -10,6 +11,7 @@ const router = express.Router();
 //   });
 // });
 
-router.use('/moderation', analyze);
+router.use('/moderation', moderationRoutes);
+router.use('/users', userRoutes);
 
 module.exports = router;
