@@ -1,5 +1,34 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Futura';
+  src: 
+       url('/public/Fonts/Futura-Book-font.ttf') format('trueType');
+  font-weight: normal;
+  font-style: normal;
+}
+/*@font-face {
+  font-family: 'utura';
+  src:
+       url('/public/Fonts/Futura-Extra-Black.tff') format('tff');
+  font-weight: extra-bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'futura';
+  src: 
+       url('/public/Fonts/Futura-Heavy-font.tff') format('tff');
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Futura';
+  src: url('/public/Fonts/Futura-medium-font.tff') format('tff');
+  font-weight: medium;
+  font-style: normal;
+}
+*/
+
 body{
   background-color: black;
   
