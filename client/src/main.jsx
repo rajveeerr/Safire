@@ -9,7 +9,7 @@ import {
   createRoutesFromElements,
 
 } from "react-router-dom";
-import HomePage from './pages/homePage.jsx';
+import HomePage from './pages/HomePage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 
 
