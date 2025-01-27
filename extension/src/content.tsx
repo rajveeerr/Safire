@@ -52,6 +52,26 @@ const hideAbusiveMessagesPreview = () => {
     }
   })
 }
+
+const hideAbusiveMessagesPreviewInPopup = () => {
+  console.log("here in popup");
+  const chatPreviews = document.querySelectorAll(
+    ".msg-overlay-list-bubble__message-snippet-container--narrow-two-line"
+  );
+  console.log(chatPreviews);
+
+  chatPreviews.forEach((preview) => {
+    const message = preview.innerHTML || "";
+    console.log(message);
+    if (detectHarassment(message)) {
+      const messageContainer = preview as HTMLElement;
+      if (messageContainer) {
+        messageContainer.innerHTML = '<i style="color: red; font-size: 10px;">Harassment detected in last message</i>';
+      }
+    }
+  });
+};
+
 let areMessagesHidden = true
 
 //function to hide the messages inside the box
@@ -263,9 +283,10 @@ const checkForHarassmentMessages = () => {
 const observeMutations = () => {
   const observer = new MutationObserver(() => {
     const hasHarassmentMessage = checkForHarassmentMessages();
-
+    hideAbusiveMessagesPreviewInPopup()
     hideAbusiveMessagesPreview()
     hideAbusiveMessagesInbox()
+    // toggleMessages()
 
     if (hasHarassmentMessage) {
       injectShowButton()
