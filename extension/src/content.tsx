@@ -27,6 +27,13 @@ const detectHarassment = (message: string) => {
   )
 }
 
+const cleanMessage = (html) => {
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+  return temp.textContent || temp.innerText || "";
+};
+
+
 // Function to hide abusive message previews
 const hideAbusiveMessagesPreview = () => {
   const chatPreviews = document.querySelectorAll(
@@ -45,24 +52,77 @@ const hideAbusiveMessagesPreview = () => {
     }
   })
 }
+let areMessagesHidden = true
 
 //function to hide the messages inside the box
-const hideAbusiveMessagesInbox = () => {
+const toggleMessages = () => {
   const chatPreviews = document.querySelectorAll(
     ".msg-s-event-listitem__body"
-  )
+  );
+
+  const showMessagesBtn = document.getElementById("show-messages-btn");
+  areMessagesHidden = !areMessagesHidden;
 
   chatPreviews.forEach((preview) => {
-    const message = preview.innerHTML || ""
+    const messageContainer = preview as HTMLElement;
+    const originalMessage = messageContainer.getAttribute('data-original-message');
 
-    if (detectHarassment(message)) {
-      const messageContainer = preview as HTMLElement;
-      if (messageContainer) {
-        messageContainer.innerHTML = '<i style="color: red; padding: 8px">Harassment detected in this message</i>';
+    if (originalMessage != null) {
+      messageContainer.classList.add('message-processed');
+
+      if (!areMessagesHidden) {
+        console.log("Showing original message:", originalMessage);
+        const newContent = document.createElement('div');
+        newContent.innerHTML = `<i style="color: black; padding: 8px">${originalMessage}</i>`;
+
+        messageContainer.textContent = '';
+        messageContainer.appendChild(newContent);
+        messageContainer.style.border = "3px dashed orange";
+      } else {
+        console.log("Showing warning message");
+        const warningContent = document.createElement('div');
+        warningContent.innerHTML = '<i style="color: red; padding: 8px">Harassment detected in this message</i>';
+
+        messageContainer.textContent = '';
+        messageContainer.appendChild(warningContent);
         messageContainer.style.border = "3px dashed red";
       }
     }
-  })
+  });
+
+  if (showMessagesBtn) {
+    showMessagesBtn.innerText = areMessagesHidden ? "Show Messages" : "Hide Messages";
+  }
+}
+
+const hideAbusiveMessagesInbox = () => {
+  const chatPreviews = document.querySelectorAll(
+    ".msg-s-event-listitem__body"
+  );
+
+  chatPreviews.forEach((preview) => {
+    if (preview.classList.contains('message-processed')) {
+      return;
+    }
+
+    const message = preview.innerHTML || "";
+    const cleanedMessage = cleanMessage(message);
+
+    if (detectHarassment(cleanedMessage)) {
+      const messageContainer = preview as HTMLElement;
+      if (messageContainer) {
+        messageContainer.classList.add('message-processed');
+        messageContainer.setAttribute('data-original-message', cleanedMessage);
+
+        const warningContent = document.createElement('div');
+        warningContent.innerHTML = '<i style="color: red; padding: 8px">Harassment detected in this message</i>';
+
+        messageContainer.textContent = '';
+        messageContainer.appendChild(warningContent);
+        messageContainer.style.border = "3px dashed red";
+      }
+    }
+  });
 }
 
 // Function to hide the entire chat if the user is flagged
@@ -72,7 +132,7 @@ const hideAbusivePersonChatPreview = () => {
   )
 
   chatPreviews.forEach((preview) => {
-    const message = preview.innerHTML || "" 
+    const message = preview.innerHTML || ""
 
     if (detectHarassment(message)) {
       const parentContainer = preview.closest(
@@ -101,14 +161,12 @@ const hideAbusivePersonChatPreview = () => {
 //   }
 // }
 
-//function to add UI in message box
-
 
 
 const injectShowButton = () => {
   const profileHeader = document.querySelector(
     ".msg-s-message-list__typing-indicator-container--without-seen-receipt"
-  )
+  );
 
   if (profileHeader && !document.getElementById("harassment-warning")) {
     const warningDiv = document.createElement("div");
@@ -126,16 +184,14 @@ const injectShowButton = () => {
     showMessagesBtn.id = "show-messages-btn";
     showMessagesBtn.innerText = "Show Messages";
     showMessagesBtn.classList.add("show-messages-btn-style");
-    showMessagesBtn.onclick = () => {
-        alert("Messages will be shown!"); // Replace with actual reveal messages logic
-    };
+    showMessagesBtn.onclick = toggleMessages;
 
     const generateReportBtn = document.createElement("button");
     generateReportBtn.id = "generate-report-btn";
     generateReportBtn.innerText = "Legal Report";
     generateReportBtn.classList.add("generate-report-btn-style");
     generateReportBtn.onclick = () => {
-        alert("Generating legal harassment report..."); // Replace with actual report generation logic
+      alert("Generating legal harassment report..."); // Replace with actual report generation logic
     };
 
     const hideUserBtn = document.createElement("button");
@@ -143,7 +199,7 @@ const injectShowButton = () => {
     hideUserBtn.innerText = "Hide User";
     hideUserBtn.classList.add("hide-user-btn-style");
     hideUserBtn.onclick = () => {
-        alert("Hiding user..."); // Replace with actual user hiding logic
+      alert("Hiding user..."); // Replace with actual user hiding logic
     };
 
     buttonsContainer.appendChild(showMessagesBtn);
@@ -156,25 +212,40 @@ const injectShowButton = () => {
     profileHeader.appendChild(warningDiv);
   }
 }
+
 const injectProfileTag = () => {
   const profileHeader = document.querySelector(
-    ".ember-view"
-  )
-    const tagContainer = document.createElement("div");
-    tagContainer.id = "profile-tag";
-    tagContainer.classList.add("profile-tag-style");
+    ".idQWxIWbgQfmzoKxZZEizSgUHHaFLPnzSERog"
+  );
 
-    const tagContent = document.createElement("span");
-    tagContent.innerText = "🚫 Harassment Detected";
-    tagContent.classList.add("harrasment-text-style");
+  console.log(profileHeader);
 
-    tagContainer.appendChild(tagContent);
+  if (!profileHeader) {
+    console.log("Profile header element not found");
+    return;
+  }
 
-    profileHeader.appendChild(tagContainer);
+  const tagContainer = document.createElement("span");
+  tagContainer.id = "profile-tag";
+  tagContainer.classList.add("profile-tag-style");
+  tagContainer.style.marginLeft = "12px";
+  tagContainer.style.display = "inline-flex";
+  tagContainer.style.alignItems = "center";
+
+  const tagContent = document.createElement("span");
+  tagContent.style.backgroundColor = "rgb(245, 225, 228)";
+  tagContent.style.color = "rgb(74, 2, 15)";
+  tagContent.style.padding = "0.5rem 0.75rem";
+  tagContent.style.borderRadius = "9999px";
+  tagContent.style.fontSize = "1rem";
+  tagContent.style.fontWeight = "600";
+  tagContent.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+  tagContent.style.letterSpacing = "0.025em";
+  tagContent.innerText = "# Spammer";
+
+  tagContainer.appendChild(tagContent);
+  profileHeader.appendChild(tagContainer);
 }
-
-
-
 
 const checkForHarassmentMessages = () => {
   const chatPreviews = document.querySelectorAll(
@@ -192,10 +263,10 @@ const checkForHarassmentMessages = () => {
 const observeMutations = () => {
   const observer = new MutationObserver(() => {
     const hasHarassmentMessage = checkForHarassmentMessages();
-    
+
     hideAbusiveMessagesPreview()
     hideAbusiveMessagesInbox()
-    
+
     if (hasHarassmentMessage) {
       injectShowButton()
     }
@@ -212,6 +283,7 @@ const observeMutations = () => {
 
 const ContentScript = () => {
   useEffect(() => {
+    injectProfileTag()
     observeMutations()
   }, [])
 
