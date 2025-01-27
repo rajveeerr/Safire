@@ -4,7 +4,7 @@ import Button from './custom-button';
 
 const links = [
     { title: 'Generate Report', href: '/' },
-    { title: 'Saved Screenshots', href: '/about' },
+    { title: 'Saved Screenshots', href: '/' },
     { title: 'Saved Reports', href: '/services' },
     { title: 'Blocked Users', href: '/services' },
     { title: 'Report to CyberSecurity', href: '/services' },
@@ -69,7 +69,7 @@ export default function Navigation() {
                 className=" fixed left-[50px] top-[50px] z-50"
             >
                 <motion.div
-                    className="w-[400px] h-[450px] bg-[#9810FA] rounded-[25px] relative overflow-hidden"
+                    className="w-[350px] h-[400px] bg-[#9810FA] rounded-[25px] relative overflow-hidden"
                     variants={menu}
                     animate={isActive ? "open" : "closed"}
                     initial="closed"

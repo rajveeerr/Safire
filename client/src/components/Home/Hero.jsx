@@ -3,7 +3,6 @@ import React from 'react';
 import { ReactTyped } from "react-typed"
 import Circle from '../../assets/Circle.png'
 
-
 const Hero = () => {
     return (
         <div>
@@ -14,7 +13,7 @@ const Hero = () => {
                         Stay Safe Online, Hassle-Free.
                     </h1>
                     <div className="flex justify-center items-center">
-                        <p className="md:text-2xl sd:text-2xl text-xl font-bold text-transparent bg-gradient-to-r from-purple-600 via-white to-purple-600 bg-clip-text">
+                        <p className="md:text-2xl sd:text-2xl font-Futura text-xl font-bold text-transparent bg-gradient-to-r from-purple-600 via-white to-purple-600 bg-clip-text">
                             Hide harassment messages while securing evidence for legal actions. <br />
                             Stay
                             <ReactTyped
@@ -26,7 +25,7 @@ const Hero = () => {
                             />
                         </p>
                     </div>
-                    <button className="bg-purple-600 mx-auto w-[200px] py-3 my-6 mb-30 rounded-md text-white font-bold pointer-events-auto">
+                    <button className="bg-purple-600 mx-auto w-[200px] py-3 my-6 mb-30 rounded-3xl text-white font-bold pointer-events-auto">
                         Install Now
                     </button>
                     <div className=' relative z-0 mt-10'>

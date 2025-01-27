@@ -6,6 +6,11 @@ export default {
     ],
     theme: {
         extend: {
+
+            fontFamily: {
+                Futura: ['Futura', 'sans-serif'],
+            },
+
             transitionTimingFunction: {
                 'custom': 'cubic-bezier(0.76, 0, 0.24, 1)',
             },
@@ -24,8 +29,9 @@ export default {
             },
             perspectiveOrigin: {
                 'bottom': 'bottom',
-            }
+            },
+
         },
-    },
-    plugins: [],
+        plugins: [],
+    }
 }
