@@ -1,17 +1,13 @@
 const express = require('express');
 
 const moderationRoutes = require('./moderation/detect-harassment');
-const userRoutes = require('./users/user');
+const userRoutes = require('./user/user-routes');
+const authenticationRoutes = require('./auth');
 
 const router = express.Router();
 
-// router.get('/', (req, res) => {
-//   res.json({
-//     message: 'API',
-//   });
-// });
-
 router.use('/moderation', moderationRoutes);
-router.use('/users', userRoutes);
+router.use('/user', userRoutes);
+router.use('/auth', authenticationRoutes);
 
 module.exports = router;
