@@ -13,7 +13,7 @@ const Hero = () => {
                         Stay Safe Online, Hassle-Free.
                     </h1>
                     <div className="flex justify-center items-center">
-                        <p className="md:text-2xl sd:text-2xl font-Futura text-xl font-bold text-transparent bg-gradient-to-r from-purple-600 via-white to-purple-600 bg-clip-text">
+                        <p className="md:text-2xl sd:text-2xl font-URW text-xl font-bold text-transparent bg-gradient-to-r from-purple-600 via-white to-purple-600 bg-clip-text">
                             Hide harassment messages while securing evidence for legal actions. <br />
                             Stay
                             <ReactTyped
