@@ -6,7 +6,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'capture_screenshot') {
         chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
             console.log('Captured screenshot:', dataUrl);
-            // Optionally save the screenshot or take further action
         });
     }
 });
