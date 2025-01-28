@@ -8,7 +8,7 @@ export default {
         extend: {
 
             fontFamily: {
-                Futura: ['Futura', 'sans-serif'],
+                URW: ['URW', 'sans-serif'],
             },
 
             transitionTimingFunction: {

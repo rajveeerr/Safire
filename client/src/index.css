@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Futura';
+  font-family: 'URW';
   src: 
-       url('/public/Fonts/Futura-Book-font.ttf') format('trueType');
-  font-weight: normal;
+       url('/public/Fonts/URWClassico-Bold.ttf') format('trueType');
+  font-weight: bold;
   font-style: normal;
 }
 /*@font-face {
