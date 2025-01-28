@@ -145,7 +145,13 @@ import Five from '/src/assets/five.png';
 
 const Feature = () => {
   return (
-    <div className="w-full bg-[#1a1b23] py-[10rem] px-4">
+    <div className="w-full bg-[#1a1b23] py-[10rem] px-4" style={{
+      
+      
+      background: 'linear-gradient(179deg, #000 1.34%, #1A1B23 64.44%, #000 99.13%)',
+      boxShadow: '0px 4px 24px -1px rgba(0, 0, 0, 0.20)',
+      backdropFilter: 'blur(20px)'
+    }}>
       <div className="max-w-[700px] mx-auto text-center mb-30">
         <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
           Advanced <span className="text-purple-600">functionality.</span> Flawless{' '}

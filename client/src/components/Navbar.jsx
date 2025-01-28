@@ -1,40 +1,41 @@
-import React, {useState} from 'react'
-import {AiOutlineClose, AiOutlineMenu} from 'react-icons/ai'
+import React from 'react';
 
 const Navbar = () => {
-    const [nav, setNav] = useState(false)
-    const handleNav = () =>{
-        setNav(!nav)
-    }
+  return (
+    <nav className="w-[1000px] mx-auto py-2 px-6 sticky top-2 z-10">
+      <div className="max-w-7xl mx-auto rounded-4xl border border-[#402E7F] p-2"
+           style={{
+             background: 'linear-gradient(0deg, rgba(37, 32, 66, 0.50) 0%, rgba(41, 41, 82, 0.50) 109.33%)',
+             boxShadow: '0px 10px 26.2px 15px rgba(102, 61, 158, 0.21)',
+             backdropFilter: 'blur(20px)'
+           }}>
+        <div className="flex items-center justify-between">
+          
+          <div className="text-purple-600 text-2xl mx-8 font-bold">
+            SafeDM
+          </div>
 
-    return (
-        <div className='relative z-20 flex justify-between items-center h-24 max-w-[1240px] m-auto px-4 text-white'>
+          
+          <div className="flex items-center justify-center space-x-8">
+            <a href="#" className="text-white hover:text-purple-400 transition-colors">
+              Home
+            </a>
+            <a href="#" className="text-white hover:text-purple-400 transition-colors">
+              How it works
+            </a>
+            <a href="#" className="text-white hover:text-purple-400 transition-colors">
+              Features
+            </a>
+          </div>
 
-            <h1 className='w-[450px] text-3xl font-bold text-transparent bg-gradient-to-r from-purple-600 via-white to-purple-600 bg-clip-text'>LOGO</h1>
-            <ul className='hidden md:flex font-extralight'>
-                <li className='p-4  hover:text-transparent bg-gradient-to-r from-white to-purple-600 bg-clip-text hover:font-bold'>Home</li>
-                <li className='p-4  hover:text-transparent bg-gradient-to-r from-white to-purple-600 bg-clip-text hover:font-bold'>How it works</li>
-                <li className='p-4  hover:text-transparent bg-gradient-to-r from-white to-purple-600 bg-clip-text hover:font-bold'>Features</li>
-                <li className='p-4  hover:text-transparent bg-gradient-to-r from-white to-purple-600 bg-clip-text hover:font-bold'>Privacy Policy</li>
-                <li className='p-4  hover:text-transparent bg-gradient-to-r from-white to-purple-600 bg-clip-text hover:font-bold'>About</li>
-                
-            </ul>
-            <button className='bg-purple-700 mx-6 w-[150px] py-2 my-2 rounded-md text-white font-bold'>Install Extn.</button>
-            <div onClick={handleNav} className=' block md:hidden'>
-                {!nav ? <AiOutlineClose size={20}/> : <AiOutlineMenu size={20}/>}
-                
-            </div>
-            <div className={!nav ? 'fixed left-0 top-0 h-full border-r border-r-gray-500 bg-[#000300] ease-in-out duration-500 md:hidden' : ' fixed left-[-100%]'}>
-                <h1 className='w-full text-3xl font-bold text-[#00df9a] m-4'>Navbar</h1>
-                <ul className='uppercase p-4'>
-                    <li className='p-4 border-b border-gray-600'>Home</li>
-                    <li className='p-4 border-b border-gray-600'>Company</li>
-                    <li className='p-4 border-b border-gray-600'>Resource</li>
-                    <li className='p-4 border-b border-gray-600'>About</li>
-                    <li className='p-4'>Contact</li>
-                </ul>
-            </div>
+          
+          <button className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors">
+            Sign in
+          </button>
         </div>
-    )
-}
-export default Navbar
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
