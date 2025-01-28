@@ -1,14 +1,8 @@
-import { CustomButton } from "~ui/custom-button"
-
-import "~style.css"
+import PopupUI from './ui/popupui'
+import "~popup.css"
 
 function IndexPopup() {
-  return (
-    <div className="plasmo-h-16 plasmo-w-40">
-      <CustomButton text="Generate Report" />
-      <CustomButton text="Contact Cybercrime Helpline" />
-    </div>
-  )
+  return <PopupUI />
 }
 
 export default IndexPopup

@@ -1,0 +1,32 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&family=Neuton:ital,wght@0,200;0,300;0,400;0,700;0,800;1,400&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Neuton:ital,wght@0,200;0,300;0,400;0,700;0,800;1,400&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    @font-face {
+        font-family: "Noto Serif", serif;
+        src: url('https://fonts.gstatic.com/s/notoserif/v16/ga6Iaw1J5X9T9RW6j9bNfF0EAVxt0G0biEntp43Qt6E.woff2') format('woff2');
+    }
+    @font-face {
+        font-family: "Inter", serif;
+        src: url('https://fonts.gstatic.com/s/inter/v12/UcCO3Fwr0p0tKf0l1U9zYw.woff2') format('woff2');
+        font-optical-sizing: auto;
+        font-style: normal;
+    }
+}
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none; 
+      scrollbar-width: none; 
+    }
+}
+

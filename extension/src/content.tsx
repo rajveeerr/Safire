@@ -1,6 +1,5 @@
-import cssText from "data-text:~style.css"
 import { useEffect } from "react"
-import '../src/style.css'
+import type { PlasmoCSConfig } from "plasmo"
 
 const abusiveWords = [
   "hate",
@@ -8,17 +7,98 @@ const abusiveWords = [
   "ugly",
   "idiot",
   "bitch",
-  "fuck off",
-  "nigga",
-  "puklit",
-  "cuck"
+  "fuck off"
 ]
 
-export const getStyle = () => {
-  const style = document.createElement("style")
-  style.textContent = cssText
-  return style
+export const config: PlasmoCSConfig = {
+  matches: ["https://www.linkedin.com/*", "https://www.instagram.com/*"]
 }
+
+const injectCustomStyles = () => {
+  const style = document.createElement("style")
+  style.textContent = `
+    /* Scoped styles for our injected elements only */
+    .harassment-warning-style {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #fff3f3;
+      border: 1px solid #ffcccc;
+      padding: 8px 12px;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .warning-text-style {
+      color: #d32f2f;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .buttons-container {
+      display: flex;
+      gap: 8px;
+    }
+
+    .show-messages-btn-style,
+    .generate-report-btn-style,
+    .hide-user-btn-style {
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background-color 0.3s ease;
+    }
+
+    .show-messages-btn-style {
+      background-color: #d32f2f;
+      color: white;
+    }
+
+    .generate-report-btn-style {
+      background-color: #1976d2;
+      color: white;
+    }
+
+    .hide-user-btn-style {
+      background-color: #6a6a6a;
+      color: white;
+    }
+
+    .show-messages-btn-style:hover {
+      background-color: #b71c1c;
+    }
+
+    .generate-report-btn-style:hover {
+      background-color: #1565c0;
+    }
+
+    .hide-user-btn-style:hover {
+      background-color: #404040;
+    }
+
+    .harassment-batch {
+      display: inline-block;
+      background-color: red;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 12px;
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+  `
+  document.head.appendChild(style)
+}
+
 
 // Function to detect harassment in a message
 const detectHarassment = (message: string) => {
@@ -301,14 +381,15 @@ const observeMutations = () => {
 
   observer.takeRecords()
 }
-
 const ContentScript = () => {
   useEffect(() => {
+    injectCustomStyles() // Inject our scoped styles
     injectProfileTag()
     observeMutations()
   }, [])
 
   return null
 }
+
 
 export default ContentScript
