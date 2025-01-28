@@ -1,34 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const { z } = require('zod');
-const bcrypt = require('bcrypt');
 const { User }=require("../../models/User")
 const { HiddenUser } = require('../../models/HiddenUser');
 const { Report } = require('../../models/Report');
 const { BlacklistedKeyword } = require('../../models/BlacklistedKeyword');
 const { Screenshot } = require('../../models/Screenshot');
+const { HiddenMessage } = require('../../models/HiddenMessage');
 
 const { authMiddleware }=require("../../middlewares")
 
 const profileRoutes = require('./profile');
 
+const HARASSER_THRESHOLD = 5;
+
 router.use("/",profileRoutes)
 
 router.post('/hide-user', authMiddleware, async (req, res) => {//-> {name: string, userId: "", platform: ""} // userId will be used to correctly identify user to hide
   try {
-    const { name, userId, platform } = req.body;
+    const { name, userId, platform, profileUrl } = req.body;
     
-    if (!name) {
+    if (!name||!profileUrl) {
       return res.status(400).json({
         status: 'error',
         type: 'ValidationError',
-        message: 'Name is required'
+        message: 'Name or ProfileUrl is required'
       });
     }
 
     const existingHiddenUser = await HiddenUser.findOne({
       name,
-      userId,
+      profileUrl,
       hiddenBy: req.userId
     });
 
@@ -43,8 +45,9 @@ router.post('/hide-user', authMiddleware, async (req, res) => {//-> {name: strin
     const hiddenUser = await HiddenUser.create({
       userId,
       name,
+      profileUrl,
       hiddenBy: req.userId,
-      platform: req.body.platform || 'unknown'
+      platform: platform || 'unknown'
     });
 
     await User.findByIdAndUpdate(
@@ -55,7 +58,8 @@ router.post('/hide-user', authMiddleware, async (req, res) => {//-> {name: strin
     res.status(201).json({
       status: 'success',
       data: {
-        hiddenUser
+        ...hiddenUser.toObject(),
+        randomProfileImage: hiddenUser.randomProfileImage
       }
     });
 
@@ -86,7 +90,7 @@ router.get('/hidden-users', authMiddleware, async (req, res) => {
       status: 'success',
       data: {
         hiddenUsers: user.hiddenUsers,
-        total: user.hiddenUsers.length
+        total: user.hiddenUsers.length,
       }
     });
 
@@ -103,9 +107,9 @@ router.get('/hidden-users', authMiddleware, async (req, res) => {
 //-> {name: string, userId: ""}
 router.post('/unhide', authMiddleware, async (req, res) => {
   try {
-    const { userId, name } = req.body;
+    const { userId, name, profileUrl } = req.body;
 
-    if (!name) {
+    if (!name||!profileUrl) {
       return res.status(400).json({
         status: 'error',
         type: 'ValidationError',
@@ -114,8 +118,8 @@ router.post('/unhide', authMiddleware, async (req, res) => {
     }
 
     const hiddenUser = await HiddenUser.findOne({
-      userId,
       name,
+      profileUrl,
       hiddenBy: req.userId
     });
 
@@ -141,6 +145,7 @@ router.post('/unhide', authMiddleware, async (req, res) => {
         unHiddenUser: {
           userId: hiddenUser.userId,
           name: hiddenUser.name,
+          profileUrl: hiddenUser.profileUrl,
           platform: hiddenUser.platform
         }
       }
@@ -563,49 +568,363 @@ router.get('/saved-reports', authMiddleware, async (req, res) => {
 });
 
 
-// update the total blocked messages by 1, this updated count can be viewed through profile ep
-router.get('/update-blocked-messages-count', authMiddleware, async (req, res) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(
-      req.userId,
-      { $inc: { totalBlockedMessages: 1 } },
-      { new: true }
-    ).select('totalBlockedMessages');
+const hideMessageSchema = z.object({
+  userName: z.string().min(1, 'Username is required'),
+  profileUrl: z.string().url('Valid profile URL is required'),
+  messageContent: z.string().min(1, 'Message content is required'),
+  timeOfMessage: z.string().datetime('Valid timestamp is required'),
+  platform: z.string().optional(),
+  metadata: z.object({
+    messageType: z.enum(['text', 'media', 'voice']).default('text'),
+    context: z.string().optional(),
+    source: z.string().optional()
+  }).optional()
+});
 
-    if (!updatedUser) {
-      return res.status(404).json({
+router.post('/hide-message', authMiddleware, async (req, res) => {
+  try {
+    const validatedData = await hideMessageSchema.parseAsync(req.body);
+
+    const existingMessage = await HiddenMessage.findOne({
+      messageContent: validatedData.messageContent,
+      userName: validatedData.userName,
+      profileUrl: validatedData.profileUrl,
+      hiddenBy: req.userId,
+      platform: validatedData.platform || 'unknown'
+    });
+
+    if (existingMessage) {
+      return res.status(409).json({
         status: 'error',
-        type: 'NotFoundError',
-        message: 'User not found'
+        type: 'DuplicateError',
+        message: 'This message has already been hidden',
+        data: {
+          existingMessage: {
+            id: existingMessage._id,
+            hiddenAt: existingMessage.createdAt
+          }
+        }
       });
     }
 
-    res.json({
-      status: 'success',
-      data: {
-        totalBlockedMessages: updatedUser.totalBlockedMessages
-      }
+    let relatedHiddenUser = await HiddenUser.findOne({
+      name: validatedData.userName,
+      profileUrl: validatedData.profileUrl,
+      hiddenBy: req.userId
     });
 
+    if (!relatedHiddenUser) {
+      relatedHiddenUser = await HiddenUser.create({
+        name: validatedData.userName,
+        profileUrl: validatedData.profileUrl,
+        hiddenBy: req.userId,
+        platform: validatedData.platform || 'unknown',
+        reason: validatedData.reason || 'No reason specified'
+      });
+    }
+
+    const hiddenMessage = await HiddenMessage.create({
+      ...validatedData,
+      timeOfMessage: new Date(validatedData.timeOfMessage),
+      hiddenBy: req.userId,
+      relatedHiddenUser: relatedHiddenUser._id
+    });
+
+    await User.findByIdAndUpdate(
+      req.userId,
+      {
+        $inc: { totalBlockedMessages: 1 },
+        $push: { hiddenMessages: hiddenMessage._id }
+      }
+    );
+
+    const updateData = {
+      $push: { hiddenMessages: hiddenMessage._id },
+      $inc: { 'statistics.totalMessagesHidden': 1 },
+      'statistics.lastMessageHidden': new Date()
+    };
+
+    if (!relatedHiddenUser.statistics?.firstMessageHidden) {
+      updateData['statistics.firstMessageHidden'] = new Date();
+    }
+
+    await HiddenUser.findByIdAndUpdate(relatedHiddenUser._id, updateData);
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        hiddenMessage: {
+          id: hiddenMessage._id,
+          userName: hiddenMessage.userName,
+          messageContent: hiddenMessage.messageContent,
+          timeOfMessage: hiddenMessage.timeOfMessage,
+          platform: hiddenMessage.platform,
+          metadata: hiddenMessage.metadata,
+          relatedHiddenUser: {
+            id: relatedHiddenUser._id,
+            name: relatedHiddenUser.name
+          },
+          createdAt: hiddenMessage.createdAt
+        }
+      }
+    });
   } catch (error) {
-    console.error('Total hidden messages error:', error);
+    if (error.code === 11000) {
+      return res.status(409).json({
+        status: 'error',
+        type: 'DuplicateError',
+        message: 'This message has already been hidden'
+      });
+    }
+
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        status: 'error',
+        type: 'ValidationError',
+        errors: error.errors.map(err => ({
+          field: err.path.join('.'),
+          message: err.message
+        }))
+      });
+    }
+
+    console.error('Hide message error:', error);
     res.status(500).json({
       status: 'error',
-      type: 'ServerError',
-      message: 'Internal server error'
+      type: 'ServerError', 
+      message: 'Failed to hide message'
     });
   }
 });
 
 
+router.get('/hidden-messages', authMiddleware, async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 20,
+      userName,
+      platform,
+      startDate,
+      endDate,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = req.query;
+
+    const query = {
+      hiddenBy: req.userId
+    };
+
+    if (userName) {
+      query.userName = { $regex: new RegExp(userName, 'i') };
+    }
+
+    if (platform) {
+      query.platform = platform;
+    }
+
+    if (startDate || endDate) {
+      query.timeOfMessage = {};
+      if (startDate) {
+        query.timeOfMessage.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        query.timeOfMessage.$lte = new Date(endDate);
+      }
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const sortDirection = sortOrder.toLowerCase() === 'asc' ? 1 : -1;
+
+    const [messages, totalCount] = await Promise.all([
+      HiddenMessage.find(query)
+        .sort({ [sortBy]: sortDirection })
+        .skip(skip)
+        .limit(parseInt(limit))
+        .populate({
+          path: 'relatedHiddenUser',
+          select: 'name profileUrl statistics'
+        }),
+      HiddenMessage.countDocuments(query)
+    ]);
+
+    const formattedMessages = messages.map(message => ({
+      id: message._id,
+      userName: message.userName,
+      messageContent: message.messageContent,
+      timeOfMessage: message.timeOfMessage,
+      platform: message.platform,
+      metadata: message.metadata,
+      createdAt: message.createdAt,
+      relatedHiddenUser: message.relatedHiddenUser ? {
+        id: message.relatedHiddenUser._id,
+        name: message.relatedHiddenUser.name,
+        profileUrl: message.relatedHiddenUser.profileUrl,
+        statistics: message.relatedHiddenUser.statistics
+      } : null
+    }));
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        messages: formattedMessages,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(totalCount / parseInt(limit)),
+          totalItems: totalCount,
+          itemsPerPage: parseInt(limit)
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Fetch hidden messages error:', error);
+    res.status(500).json({
+      status: 'error',
+      type: 'ServerError',
+      message: 'Failed to fetch hidden messages'
+    });
+  }
+});
+
+//we will allow users to search for harraser status for any other user from dashboard
+router.get('/check-harasser', async (req, res) => {
+  try {
+    const { name, profileUrl } = req.query;
+
+    if (!name || !profileUrl) {
+      return res.status(400).json({
+        status: 'error',
+        type: 'ValidationError',
+        message: 'Name and profileUrl are required query parameters'
+      });
+    }
+
+    const hiddenInstances = await HiddenUser.find({
+      name,
+      profileUrl
+    }).populate('hiddenBy', 'name email');
+
+    const uniqueHiders = new Set(hiddenInstances.map(instance => 
+      instance.hiddenBy._id.toString()
+    ));
+    const hideCount = uniqueHiders.size;
+    const isHarasser = hideCount >= HARASSER_THRESHOLD;
+
+    if (hiddenInstances.length > 0 && 
+        hiddenInstances[0].isHarasser !== isHarasser) {
+      await HiddenUser.updateMany(
+        { platform, profileUrl },
+        { 
+          $set: {
+            isHarasser,
+            totalHideCount: hideCount,
+            lastReviewDate: new Date()
+          }
+        }
+      );
+    }
+
+    const reports = await Report.find({
+      name,
+      'userProfileDetails.profileUrl': profileUrl
+    }).select('reportType severity status createdAt');
+
+    res.json({
+      status: 'success',
+      data: {
+        isHarasser,
+        statistics: {
+          totalUniqueHiders: hideCount,
+          threshold: HARASSER_THRESHOLD,
+          totalReports: reports.length,
+          reportSeverityBreakdown: reports.reduce((acc, report) => {
+            acc[report.severity] = (acc[report.severity] || 0) + 1;
+            return acc;
+          }, {}),
+          reportTypeBreakdown: reports.reduce((acc, report) => {
+            acc[report.reportType] = (acc[report.reportType] || 0) + 1;
+            return acc;
+          }, {})
+        },
+        hiddenBy: hiddenInstances.map(instance => ({
+          userId: instance.hiddenBy._id,
+          name: instance.hiddenBy.name,
+          date: instance.createdAt,
+          reason: instance.reason || 'Not specified'
+        })),
+        lastReviewDate: new Date(),
+        metadata: {
+          name,
+          profileUrl,
+          recentReports: reports
+            .sort((a, b) => b.createdAt - a.createdAt)
+            .slice(0, 3)
+            .map(report => ({
+              type: report.reportType,
+              severity: report.severity,
+              status: report.status,
+              date: report.createdAt
+            }))
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Check harasser status error:', error);
+    res.status(500).json({
+      status: 'error',
+      type: 'ServerError',
+      message: 'Failed to check harasser status'
+    });
+  }
+});
+
+//maybe we can use this on dashboard 
+router.get('/known-harassers', authMiddleware, async (req, res) => {
+  try {
+    const { platform } = req.query;
+    const query = { isHarasser: true };
+    if (platform) {
+      query.platform = platform;
+    }
+    const harassers = await HiddenUser.find(query)
+      .select('name profileUrl platform totalHideCount lastReviewDate randomProfileImage')
+      .sort({ totalHideCount: -1 });
+
+    const uniqueHarassers = Array.from(
+      harassers.reduce((map, user) => {
+        if (!map.has(user.profileUrl)) {
+          map.set(user.profileUrl, {
+            name: user.name,
+            profileUrl: user.profileUrl,
+            platform: user.platform,
+            totalHideCount: user.totalHideCount,
+            lastReviewDate: user.lastReviewDate,
+            randomProfileImage: user.randomProfileImage
+          });
+        }
+        return map;
+      }, new Map())
+    ).map(([_, value]) => value);
+    res.json({
+      status: 'success',
+      data: {
+        harassers: uniqueHarassers,
+        total: uniqueHarassers.length,
+        lastUpdated: new Date()
+      }
+    });
+  } catch (error) {
+    console.error('Fetch known harassers error:', error);
+    res.status(500).json({
+      status: 'error',
+      type: 'ServerError',
+      message: 'Failed to fetch known harassers'
+    });
+  }
+});
+
 // router.post('/report-user', (req, res) => {//this will fetch generated user report for the user and then we will send it to cyberhelpline
-  
+
 // });
-
-// endpoint to store all the hidden/flagged messages with userName of sender
-
-// endpoint to add tag of harraser on user profile, this will return true when a lot of user hide and report someone, gotta
-// maintain how many times an user has been hidden/blocked if its greater that a certain number lets say 5(maybe we can change 
-// this number by changing sensitivity)
 
 module.exports = router;
