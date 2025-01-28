@@ -48,49 +48,114 @@ const formatZodError = (error) => {
   };
 };
 
-router.get('/profile', authMiddleware, async (req, res) => { //Bearer ey...
-  try {
-    const user = await User.findById(req.userId)
-      .select('-password')
-      .populate([
-        { path: 'trustedContacts', select: 'name email' },
-        { path: 'hiddenUsers', model: 'HiddenUser' },
-        { path: 'reports', model: 'Report' },
-        { path: 'screenshots', model: 'Screenshot' }
-      ]);
-
-    if (!user) {
-      return res.status(404).json({ status: 'error', type: 'NotFoundError', message: 'User not found'});
-    }
-
-    const stats = {
-      totalBlockedMessages: user.totalBlockedMessages,
-      totalReports: user.reports?.length || 0,
-      totalScreenshots: user.screenshots?.length || 0,
-      totalHiddenUsers: user.hiddenUsers?.length || 0
-    };
-
-    res.json({
-      status: 'success',
-      data: {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          profilePicture: user.profilePicture,
-          preferences: user.preferences,
-          trustedContacts: user.trustedContacts,
-          stats,
-          createdAt: user.createdAt
-        }
+router.get('/profile', authMiddleware, async (req, res) => {
+    try {
+      const user = await User.findById(req.userId)
+        .select('-password')
+        .populate([
+          { path: 'trustedContacts', select: 'name email' },
+          { 
+            path: 'hiddenUsers',
+            model: 'HiddenUser',
+            populate: {
+              path: 'hiddenMessages',
+              model: 'HiddenMessage',
+              select: 'messageContent timeOfMessage platform metadata'
+            }
+          },
+          { path: 'hiddenMessages', model: 'HiddenMessage' },
+          { path: 'reports', model: 'Report' },
+          { path: 'screenshots', model: 'Screenshot' }
+        ]);
+  
+      if (!user) {
+        return res.status(404).json({ 
+          status: 'error', 
+          type: 'NotFoundError', 
+          message: 'User not found'
+        });
       }
-    });
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ status: 'error', type: 'ServerError', message: 'Internal server error' });
-  }
-});
+  
+      const messageStats = {
+        totalMessages: user.hiddenMessages.length,
+        byPlatform: user.hiddenMessages.reduce((acc, msg) => {
+          acc[msg.platform] = (acc[msg.platform] || 0) + 1;
+          return acc;
+        }, {}),
+        byMessageType: user.hiddenMessages.reduce((acc, msg) => {
+          const type = msg.metadata?.messageType || 'text';
+          acc[type] = (acc[type] || 0) + 1;
+          return acc;
+        }, {})
+      };
+  
+      const hiddenUserStats = {
+        total: user.hiddenUsers.length,
+        byPlatform: user.hiddenUsers.reduce((acc, hu) => {
+          acc[hu.platform] = (acc[hu.platform] || 0) + 1;
+          return acc;
+        }, {}),
+        mostActive: user.hiddenUsers
+          .sort((a, b) => (b.statistics?.totalMessagesHidden || 0) - (a.statistics?.totalMessagesHidden || 0))
+          .slice(0, 5)
+          .map(hu => ({
+            name: hu.name,
+            platform: hu.platform,
+            totalMessages: hu.statistics?.totalMessagesHidden || 0,
+            firstMessageDate: hu.statistics?.firstMessageHidden,
+            lastMessageDate: hu.statistics?.lastMessageHidden
+          }))
+      };
+  
+      const stats = {
+        totalBlockedMessages: user.totalBlockedMessages,
+        totalReports: user.reports?.length || 0,
+        totalScreenshots: user.screenshots?.length || 0,
+        totalHiddenUsers: user.hiddenUsers?.length || 0,
+        messageStats,
+        hiddenUserStats
+      };
+  
+      const recentActivity = {
+        messages: user.hiddenMessages
+          .sort((a, b) => b.timeOfMessage - a.timeOfMessage)
+          .slice(0, 5)
+          .map(msg => ({
+            id: msg._id,
+            content: msg.messageContent,
+            time: msg.timeOfMessage,
+            platform: msg.platform,
+            type: msg.metadata?.messageType
+          }))
+      };
+  
+      res.json({
+        status: 'success',
+        data: {
+          user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            profilePicture: user.profilePicture,
+            preferences: user.preferences,
+            trustedContacts: user.trustedContacts,
+            stats,
+            recentActivity,
+            createdAt: user.createdAt
+          }
+        }
+      });
+  
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ 
+        status: 'error', 
+        type: 'ServerError', 
+        message: 'Internal server error' 
+      });
+    }
+  });
+  
 
 // payload-> {name: string, profilePicture: string, currentPassword: string,newPassword: string, preferences: {autoGenerateReport: false,autoSaveScreenshots: true,enableTags: true}}   
 router.post('/update-profile', authMiddleware, async (req, res) => {
@@ -174,5 +239,7 @@ router.post('/update-profile', authMiddleware, async (req, res) => {
     });
   }
 });
+
+  
 
 module.exports = router;

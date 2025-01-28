@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
   }],
   totalBlockedMessages: { type: Number, default: 0 },
   hiddenUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'HiddenUser' }],
+  hiddenMessages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'HiddenMessage' }],
   reports: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Report' }],
   screenshots: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Screenshot' }],
 }, { timestamps: true });
