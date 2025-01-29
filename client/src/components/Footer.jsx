@@ -8,31 +8,62 @@ import {
 
 const Footer = () => {
     return (
-        <div className='max-w-[1240px] mx-auto py-16 px-4 grid lg:grid-cols-2 text-gray-300 gap-20'>
-            <div>
-                <h1 className='w-full text-3xl font-bold text-transparent bg-gradient-to-r from-purple-600 via-white to-purple-600 bg-clip-text'>Harassment Saver</h1>
-                <p className='py-4'>Harassment Saver is dedicated to protecting users from online harassment by offering privacy, support, and resources for legal action. Our goal is to make the internet a safer space for everyone.</p>
-                <div className='flex justify-between md:w-[75%] my-6'>
-                    <FaFacebookSquare size={30} />
-                    <FaGithubSquare size={30} />
-                    <FaInstagram size={30} />
-                    <FaTwitterSquare size={30} />
-                </div>
-            </div>
-            <div className=' flex justify-between mt-6'>
-                <div className='w-full'>
-                    <h1 className='font-medium text-gray-500'>Quick Links</h1>
-                    <ul>
-                        <li className='py-2 text-sm'>About Us</li>
-                        <li className='py-2 text-sm'>Contact</li>
-                        <li className='py-2 text-sm'>Privacy Policy</li>
-                        <li className='py-2 text-sm'>Terms of Service</li>
-                        <li className='py-2 text-sm'>FAQ</li>
-                    </ul>
-                </div>
-            </div>
+      <footer className="w-full px-8 py-6" style={{
+        borderRadius: '35px 35px 0px 0px',
+        border: '1px solid #7210FA',
+        background: 'linear-gradient(0deg, #241E41 0%, #0F0F15 109.33%)',
+        boxShadow: '0px 4px 24px -1px rgba(0, 0, 0, 0.20)',
+        backdropFilter: 'blur(20px)'
+      }}>
+        <div className="max-w-6xl mx-auto flex pt-8 flex-wrap justify-between items-start gap-8">
+          
+          <div className="flex flex-col gap-4 max-w-sm">
+            <h2 className="text-purple-500 text-2xl font-bold">LOGO</h2>
+            <p className="text-gray-300">
+              Harassment Saver protects users from online harassment by ensuring privacy,
+              support, and legal resources, making the internet safer for all.
+            </p>
+          </div>
+  
+          
+          <div className="flex flex-col gap-4">
+            <h3 className="text-purple-600 font-semibold">Explore</h3>
+            <ul className="flex flex-col gap-2">
+              <li><a href="/Hero.jsx" className="text-gray-300 hover:text-purple-500">Home</a></li>
+              <li><a href="/demo" className="text-gray-300 hover:text-purple-500">Demo</a></li>
+              <li><a href="/features" className="text-gray-300 hover:text-purple-500">Features</a></li>
+            </ul>
+          </div>
+  
+          
+          <div className="flex flex-col gap-4">
+            <h3 className="text-purple-600 font-semibold">Resources</h3>
+            <ul className="flex flex-col gap-2">
+              <li><a href="https://github.com" className="text-gray-300 hover:text-purple-600">Github</a></li>
+              <li><a href="https://linkedin.com" className="text-gray-300 hover:text-purple-600">Linkedin</a></li>
+              <li><a href="/explore" className="text-gray-300 hover:text-purple-600">Explore</a></li>
+              <li><a href="/explore" className="text-gray-300 hover:text-purple-600">Explore</a></li>
+            </ul>
+          </div>
+  
+          
+          <div className="flex flex-col gap-4">
+            <h3 className="text-purple-500 font-semibold">Links</h3>
+            <ul className="flex flex-col text-gray-300 gap-2">
+              <li><FaFacebookSquare size={30}/></li>
+              <li><FaGithubSquare size={30}/></li>
+              <li><FaInstagram size={30}/></li>
+              <li><FaTwitterSquare size={30}/></li>
+            </ul>
+          </div>
         </div>
-    )
-}
+  
+        
+        <div className="mt-8 text-gray-400 max-w-6xl flex m-auto text-sm">
+          Copyright @SafeDM 2025
+        </div>
+      </footer>
+    );
+  };
 
 export default Footer;
