@@ -813,7 +813,7 @@ router.get('/check-harasser', async (req, res) => {
     if (hiddenInstances.length > 0 && 
         hiddenInstances[0].isHarasser !== isHarasser) {
       await HiddenUser.updateMany(
-        { platform, profileUrl },
+        { name, profileUrl },
         { 
           $set: {
             isHarasser,
@@ -842,7 +842,7 @@ router.get('/check-harasser', async (req, res) => {
             return acc;
           }, {}),
           reportTypeBreakdown: reports.reduce((acc, report) => {
-            acc[report.reportType] = (acc[report.reportType] || 0) + 1;
+            acc[report.reportType] = (acc[report.reportType] || 0) + 1; 
             return acc;
           }, {})
         },
@@ -926,5 +926,7 @@ router.get('/known-harassers', authMiddleware, async (req, res) => {
 // router.post('/report-user', (req, res) => {//this will fetch generated user report for the user and then we will send it to cyberhelpline
 
 // });
+
+// an ep to review and remove the harraser tag for the user
 
 module.exports = router;
