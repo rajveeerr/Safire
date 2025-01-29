@@ -28,23 +28,6 @@ const ToggleButton = ({ label, enabled, onToggle }) => (
     };
   
     return (<div className="plasmo-w-[320px] plasmo-min-h-[480px] plasmo-bg-gray-900 plasmo-text-white plasmo-p-4 plasmo-font-sans">
-        {/* Header */}
-        <div className="plasmo-flex plasmo-items-center plasmo-justify-between plasmo-mb-6">
-          <div className="plasmo-flex plasmo-items-center plasmo-gap-2">
-            <div className="plasmo-w-8 plasmo-h-8 plasmo-bg-blue-600 plasmo-rounded-lg plasmo-flex plasmo-items-center plasmo-justify-center">
-              <Shield className="plasmo-w-5 plasmo-h-5" />
-            </div>
-            <span className="plasmo-text-lg plasmo-font-medium">HS-Saver</span>
-          </div>
-          <div className="plasmo-flex plasmo-items-center plasmo-gap-2">
-            <button className="plasmo-px-3 plasmo-py-1 plasmo-text-sm plasmo-bg-gray-800 plasmo-rounded-md plasmo-hover:bg-gray-700 plasmo-transition-colors">
-              Sign out
-            </button>
-            <button className="plasmo-p-1 plasmo-hover:bg-gray-800 plasmo-rounded-md plasmo-transition-colors">
-              ✕
-            </button>
-          </div>
-        </div>
   
         {/* Main Content */}
         <div className="plasmo-mb-6">

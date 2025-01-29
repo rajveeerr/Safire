@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings2, Shield } from 'lucide-react';
 import HomePage from './pages/home';
 import SettingsPage from './pages/settings';
 import ReportsPage from './pages/reports';
 import BlockedPage from './pages/blocked';
 import NavigationBar from './components/navigation-bar';
+import { isAuthenticated, getStoredToken } from '../utils/auth';
+
 
 const PopupUI = () => {
     const [currentPage, setCurrentPage] = useState('home');
@@ -35,16 +37,29 @@ const PopupUI = () => {
 };
 
 const Header = () => {
+    const handleLogin = () => {
+        if (!isAuthenticated()) {
+          chrome.runtime.sendMessage({ action: "initiateLogin" });
+        }
+    };
+
     return (
-        <div className="plasmo-p-4 plasmo-border-b plasmo-border-gray-800">
-            <div className="plasmo-flex plasmo-justify-between plasmo-items-center">
-                <div className="plasmo-flex plasmo-items-center plasmo-gap-2">
-                    <Shield className="plasmo-w-6 plasmo-h-6 plasmo-text-blue-500" />
-                    <span className="plasmo-font-bold plasmo-text-lg">Harassment Saver</span>
+        <div className='plasmo-p-4'>
+            <div className="plasmo-flex plasmo-items-center plasmo-justify-between">
+            <div className="plasmo-flex plasmo-items-center plasmo-gap-2">
+                <div className="plasmo-w-8 plasmo-h-8 plasmo-bg-blue-600 plasmo-rounded-lg plasmo-flex plasmo-items-center plasmo-justify-center">
+                <Shield className="plasmo-w-5 plasmo-h-5" />
                 </div>
-                <button className="plasmo-p-2 plasmo-rounded-md hover:plasmo-bg-gray-800">
-                    <Settings2 className="plasmo-w-5 plasmo-h-5" />
+                <span className="plasmo-text-lg plasmo-font-medium">HS-Saver</span>
+            </div>
+            <div className="plasmo-flex plasmo-items-center plasmo-gap-2">
+                <button className="plasmo-px-3 plasmo-py-1 plasmo-text-sm plasmo-bg-gray-800 plasmo-rounded-md plasmo-hover:bg-gray-700 plasmo-transition-colors">
+                <button onClick={handleLogin}>Login</button>
                 </button>
+                <button className="plasmo-p-1 plasmo-hover:bg-gray-800 plasmo-rounded-md plasmo-transition-colors">
+                ✕
+                </button>
+            </div>
             </div>
         </div>
     );
