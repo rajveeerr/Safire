@@ -143,6 +143,7 @@ Safire has been recognized for its innovative approach and social impact at mult
 ## Demo Video
 
 [![Watch the demo](extension/assets/screenshots/client-updated-ui.png)](https://vimeo.com/1059493429?share=copy)
+*(Click the image above to watch the full demo on Vimeo)*
 
 ---
 
@@ -218,7 +219,7 @@ We went from initial low-fidelity wireframes to a polished final product in a sh
 
 **Initial Wireframes:**
 <div align="center">
-  <a href="https://drive.google.com/file/d/100yg2kfhHHoeIC910DvbznlqmIDm0tjL/view?usp=sharing" target="_blank">
+  <a href="https://app.eraser.io/workspace/JUmzwgvpm12ATQiWXZUU?origin=share" target="_blank">
      <img width="1168" height="447" alt="Screenshot 2025-07-22 at 1 46 04 AM" src="https://github.com/user-attachments/assets/33d7c365-0d59-4db5-899f-984145510b9e" />
   </a>
   <br>
@@ -227,9 +228,9 @@ We went from initial low-fidelity wireframes to a polished final product in a sh
 
 **Extension in Action:**
 <div align="center">
-  <a href="https://drive.google.com/file/d/100yg2kfhHHoeIC910DvbznlqmIDm0tjL/view?usp=sharing" target="_blank">
      <img src="extension/assets/screenshots/real_time_detection.png" alt="Extension UI" width="800"/>
-  </a>
+      <img src="extension/assets/screenshots/harasser_tag.png" alt="Harraser Tag" width="800"/>
+      <img src="extension/assets/screenshots/login_to_save.png" alt="Login Msg UI" width="800"/>
   <br>
   <em>Harassing messages are being blocked by the extension even before the users sees them.</em>
 </div>
