@@ -2,6 +2,7 @@ import React from 'react'
 import Hero from '../components/Home/Hero'
 import VidOverlay from '../components/Home/VidOverlay'
 import Feature from '../components/Home/Feature'
+import Pricing from '../components/User/Pricing'
 
 function HomePage() {
   return (
@@ -9,6 +10,7 @@ function HomePage() {
       <Hero />
       <VidOverlay />
       <Feature />
+      <Pricing />
     </div>
 
   )

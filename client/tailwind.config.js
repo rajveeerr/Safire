@@ -8,9 +8,6 @@ export default {
     theme: {
         extend: {
 
-            fontFamily: {
-                URW: ['URW', 'sans-serif'],
-            },
 
             transitionTimingFunction: {
                 'custom': 'cubic-bezier(0.76, 0, 0.24, 1)',
