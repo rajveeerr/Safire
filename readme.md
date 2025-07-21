@@ -142,9 +142,7 @@ Safire has been recognized for its innovative approach and social impact at mult
 
 ## Demo Video
 
-[](https://vimeo.com/1059493429?share=copy)
-
-*(Click the image above to watch the full demo on Vimeo)*
+[![Watch the demo](extension/assets/screenshots/client-updated-ui.png)](https://vimeo.com/1059493429?share=copy)
 
 ---
 
@@ -158,7 +156,7 @@ Online harassment is a critical social issue, disproportionately affecting women
 
 <div align="center">
   <a href="https://drive.google.com/file/d/1XuOpAc2S8qeLWhWpD5HGfEtjNZ-d_To4/view?usp=share_link" target="_blank">
-    <img src="https://drive.google.com/file/d/1-qubX_RpWiNckg-_IjjLgyiIc1YERjiQ/view?usp=share_link" alt="Safire Project Presentation" width="800">
+     <img width="790" height="441" alt="PPT Thumbnail" src="https://github.com/user-attachments/assets/b2ca67aa-b762-4cce-b988-9234b042929f" />    
   </a>
   <br>
   <em>Click the image above to view the full presentation</em>
@@ -170,9 +168,13 @@ Online harassment is a critical social issue, disproportionately affecting women
 
 Safire is a browser extension that acts as your personal guardian against online harassment. It uses advanced AI to analyze messages in real-time, proactively hiding harmful content before you see it. Safire silently collects evidence, empowers you to take legal action, and helps create a safer online community.
 
-<br>
-<img src="https://i.imgur.com/a4fC812.png" alt="Solution Visual" width="800"/>
-<br>
+<div align="center">
+  <a href="https://drive.google.com/file/d/1XuOpAc2S8qeLWhWpD5HGfEtjNZ-d_To4/view?usp=share_link" target="_blank">
+     <img width="1014" height="568" alt="Screenshot 2025-07-22 at 1 40 10 AM" src="https://github.com/user-attachments/assets/8620915c-9f64-448e-95f2-cccd05bd130f" />
+  </a>
+  <br>
+  <em>Click the image above to view the full presentation</em>
+</div>
 
 ---
 
@@ -215,16 +217,43 @@ We went from initial low-fidelity wireframes to a polished final product in a sh
 <br>
 
 **Initial Wireframes:**
-<img src="https://i.imgur.com/2Xy3l5t.png" alt="Wireframes" width="800"/>
+<div align="center">
+  <a href="https://drive.google.com/file/d/100yg2kfhHHoeIC910DvbznlqmIDm0tjL/view?usp=sharing" target="_blank">
+     <img width="1168" height="447" alt="Screenshot 2025-07-22 at 1 46 04 AM" src="https://github.com/user-attachments/assets/33d7c365-0d59-4db5-899f-984145510b9e" />
+  </a>
+  <br>
+  <em>Click the image above to view the full wireframe</em>
+</div>
 
 **Extension in Action:**
-<img src="https://i.imgur.com/gK98hUf.png" alt="Extension UI" width="800"/>
+<div align="center">
+  <a href="https://drive.google.com/file/d/100yg2kfhHHoeIC910DvbznlqmIDm0tjL/view?usp=sharing" target="_blank">
+     <img src="extension/assets/screenshots/real_time_detection.png" alt="Extension UI" width="800"/>
+  </a>
+  <br>
+  <em>Harassing messages are being blocked by the extension even before the users sees them.</em>
+</div>
+
 
 **Dashboard UI:**
-<img src="https://i.imgur.com/Fw5x7W4.png" alt="Dashboard UI" width="800"/>
+<div align="center">
+  <a href="https://safe-dm-dashboard.vercel.app/" target="_blank">
+    <img width="1280" height="800" alt="Dashboard UI" src="https://github.com/user-attachments/assets/3bd0384d-37f5-49f2-86cb-d72d356e8a2e" />
+ <img width="1280" height="800" alt="Dashboard UI 2" src="https://github.com/user-attachments/assets/72e7a13a-a026-429f-b665-ebf03a6e386f" /> 
+  </a>
+  <br>
+  <em>Click the image above to create your account and view dashboard.</em>
+</div>
 
 **Generated Legal Report:**
-<img src="https://i.imgur.com/zWz2X4D.png" alt="Report Sample" width="800"/>
+<div align="center">
+  <a href="https://drive.google.com/file/d/100yg2kfhHHoeIC910DvbznlqmIDm0tjL/view?usp=sharing" target="_blank">
+     <img width="452" height="619" alt="Screenshot 2025-07-22 at 1 14 41 AM" src="https://github.com/user-attachments/assets/69b6c162-4c0b-4ccc-9918-09d0f608bf1a" />
+  </a>
+  <br>
+  <em>Click the image above to view the full report</em>
+</div>
+
 
 </details>
 
