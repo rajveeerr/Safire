@@ -156,8 +156,9 @@ Online harassment is a critical social issue, disproportionately affecting women
 - **Slow Manual Reporting**: Platform reporting systems are slow and often ineffective, leaving victims unprotected.
 
 <div align="center">
-  <a href="https://drive.google.com/file/d/1XuOpAc2S8qeLWhWpD5HGfEtjNZ-d_To4/view?usp=share_link" target="_blank">
-     <img width="790" height="441" alt="PPT Thumbnail" src="https://github.com/user-attachments/assets/b2ca67aa-b762-4cce-b988-9234b042929f" />    
+  <a href="https://drive.google.com/file/d/1XuOpAc2S8qeLWhWpD5HGfEtjNZ-d_To4/view?usp=share_link" target="_blank">  
+     <img width="1014" height="568" alt="Problem" src="https://github.com/user-attachments/assets/4fa39729-7c76-432f-9ed9-d555fb082abd" />
+
   </a>
   <br>
   <em>Click the image above to view the full presentation</em>
@@ -171,7 +172,7 @@ Safire is a browser extension that acts as your personal guardian against online
 
 <div align="center">
   <a href="https://drive.google.com/file/d/1XuOpAc2S8qeLWhWpD5HGfEtjNZ-d_To4/view?usp=share_link" target="_blank">
-     <img width="1014" height="568" alt="Screenshot 2025-07-22 at 1 40 10 AM" src="https://github.com/user-attachments/assets/8620915c-9f64-448e-95f2-cccd05bd130f" />
+     <img width="1014" height="568" alt="Our Solution" src="https://github.com/user-attachments/assets/8620915c-9f64-448e-95f2-cccd05bd130f" />
   </a>
   <br>
   <em>Click the image above to view the full presentation</em>
