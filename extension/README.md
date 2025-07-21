@@ -65,4 +65,12 @@ The Safire extension icon <img src="https://raw.githubusercontent.com/rajveeerr/
 * **Blocked:** Manage users you have hidden.
 * **Keywords:** Add custom keywords to the blacklist for personalized protection.
 
-<img src="https://i.imgur.com/gK98hUf.png" alt="Extension in Action" width="600"/>
+<div align="center">
+     <img src="assets/screenshots/popup_ui.png" alt="Extension UI" width="400"/>
+      <img src="assets/screenshots/popup_ui_msg.png" alt="Harraser Tag" width="400"/>
+      <img src="assets/screenshots/popup_ui_blocked.png" alt="Login Msg UI" width="400"/>
+      <img src="assets/screenshots/popup_ui_keywords.png" alt="Login Msg UI" width="400"/>
+      <img src="assets/screenshots/popup_ui_preferences.png" alt="Login Msg UI" width="400"/>
+  <br>
+  <em>Harassing messages are being blocked by the extension even before the users sees them.</em>
+</div>
