@@ -6,6 +6,7 @@ const screenshotSchema = new mongoose.Schema({
   uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   relatedReport: { type: mongoose.Schema.Types.ObjectId, ref: 'Report' },
   platform: String,
+  context: String
 },{ timestamps: true });
 
 const Screenshot = mongoose.model('Screenshot', screenshotSchema);

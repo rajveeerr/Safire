@@ -15,9 +15,10 @@ const updateProfileSchema = z.object({
     enableTags: z.boolean(),
   }).optional(),
   currentPassword: z.string().min(8).optional(),
+  gender: z.enum(['male', 'female', 'other']).optional(),
   newPassword: z.string().min(8).regex(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-    'Password must contain uppercase, lowercase, number, and special character nad should be atleast 8 characters long.'
+    'Password must contain uppercase, lowercase, number, and special character and should be at least 8 characters long.'
   ).optional()
 }).refine((data) => {
   if (data.newPassword && !data.currentPassword) {
@@ -137,6 +138,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
             name: user.name,
             email: user.email,
             profilePicture: user.profilePicture,
+            gender: user.gender,
             preferences: user.preferences,
             trustedContacts: user.trustedContacts,
             stats,
@@ -161,7 +163,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
 router.post('/update-profile', authMiddleware, async (req, res) => {
   try {
     const validatedData = await updateProfileSchema.parseAsync(req.body);
-    const { name, profilePicture, preferences, currentPassword, newPassword } = validatedData;
+    let { name, profilePicture, preferences, currentPassword, newPassword, gender } = validatedData;
 
     const user = await User.findById(req.userId);
     if (!user) {
@@ -175,9 +177,16 @@ router.post('/update-profile', authMiddleware, async (req, res) => {
     const updatedFields = {};
     let passwordChanged = false;
 
-    if (name && name !== user.name) {
-      user.name = name;
-      updatedFields.name = name;
+    if (name) {
+      name = name.toLowerCase();
+      if (name !== user.name) {
+        user.name = name;
+        updatedFields.name = name;
+      }
+    }
+    if (gender && gender !== user.gender) {
+      user.gender = gender;
+      updatedFields.gender = gender;
     }
     if (profilePicture && profilePicture !== user.profilePicture) {
       user.profilePicture = profilePicture;

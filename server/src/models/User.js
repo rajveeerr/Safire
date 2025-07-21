@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   profilePicture: String,
+  gender: String,
   preferences: {
     autoGenerateReport: { type: Boolean, default: false },
     autoSaveScreenshots: { type: Boolean, default: false },
@@ -20,6 +21,13 @@ const userSchema = new mongoose.Schema({
   reports: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Report' }],
   screenshots: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Screenshot' }],
 }, { timestamps: true });
+
+userSchema.pre('save', function(next) {
+  if (!this.profilePicture) {
+      this.randomProfileImage = `https://avatar.iran.liara.run/public/${this.gender==="female"?"girl":"boy"}?username=${this.name}`;
+  }
+  next();
+});
 
 const User = mongoose.model('User', userSchema);
 

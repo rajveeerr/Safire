@@ -1,6 +1,6 @@
 const express = require('express');
 
-const moderationRoutes = require('./moderation/detect-harassment');
+const moderationRoutes = require('./moderation/detect-harassment.js');
 const userRoutes = require('./user/user-routes');
 const authenticationRoutes = require('./auth');
 

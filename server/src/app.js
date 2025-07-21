@@ -14,9 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/health', (req, res) => {
-  res.json({
-    message: "I'm working fine",
-  });
+  res.status(200).send('OK');
 });
 
 app.use('/api/v1', api);
