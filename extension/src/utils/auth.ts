@@ -1,26 +1,45 @@
 import type { JwtPayload } from "types";
 
-export const isAuthenticated = (): boolean => {
-    const token = localStorage.getItem('authToken');
-    if (!token) return false;
-    
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1])) as JwtPayload;
-      return payload.exp > Date.now() / 1000;
-    } catch {
-      return false;
-    }
-  };
-  
-  export const getStoredToken = (): string | null => {
-    return localStorage.getItem('authToken');
-  };
-  
-  export const setToken = (token: string): void => {
-    localStorage.setItem('authToken', token);
-  };
-  
-  export const removeToken = (): void => {
-    localStorage.removeItem('authToken');
-  };
-  
+export const isAuthenticated = async (): Promise<boolean> => {
+  return new Promise((resolve) => {
+      chrome.storage.local.get(['authToken'], (result) => {
+          const token = result.authToken;
+          // console.log("tokenfoundhere",token);
+          if (!token) {
+              // console.log('No token found');
+              return resolve(false);
+          }
+          
+          try {
+              const parts = token.split('.');
+              if (parts.length !== 3) {
+                  console.error('Invalid token format');
+                  return resolve(false);
+              }
+              
+              const payload = JSON.parse(atob(parts[1])) as JwtPayload;
+              const isValid = payload.exp > Date.now() / 1000;
+              console.log('Token validation:', isValid ? 'valid' : 'expired');
+              resolve(isValid);
+          } catch (error) {
+              console.error('Token validation error:', error);
+              resolve(false);
+          }
+      });
+  });
+};
+
+
+export const getToken = async (): Promise<string | null> => {
+  return new Promise((resolve) => {
+     chrome.storage.local.get(['authToken'], (result) => {
+      const token = result.authToken;
+      // console.log("tokenfoundhere",token);
+      if (!token) {
+        // console.log('No token found');
+        return resolve(null);
+      }
+      resolve(token);
+    });
+  });
+};
