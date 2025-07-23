@@ -352,9 +352,11 @@ pnpm dev
 
 Then follow the rest of the [extension's README](extension/README.md) to load it in Chrome.
 
----
+
 
 > 💡 Each component is self-contained and can be developed/tested independently.
+
+---
 
 <!-- ## Contributors
 
