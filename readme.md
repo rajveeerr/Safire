@@ -102,35 +102,44 @@ View saved messages, blocked users, blocked keywords, generated reports, and mod
 3️⃣ **Users can manually review hidden messages if needed.**  
 
  -->
+
 <div align="center">
+
   <a href="https://safire-five.vercel.app/" target="_blank">
-    <img src="https://raw.githubusercontent.com/rajveeerr/Safire/main/client/src/assets/Safire.svg" alt="Safire Logo" width="200"/>
+    <img src="https://raw.githubusercontent.com/rajveeerr/Safire/main/client/src/assets/Safire.svg" alt="Safire Logo" width="250"/>
   </a>
+
   <h1 align="center">Safire - The Harassment Saver</h1>
   <p align="center">
-    A real-time, AI-powered browser extension to detect, hide, and document online harassment, creating a safer digital space for everyone.
-  </p>
-  <p align="center">
-    <a href="https://vimeo.com/1059493429?share=copy"><strong>Watch the Demo »</strong></a>
+    A real-time, AI-powered browser extension to detect, hide, and document online harassment, 
     <br />
-    <a href="https://safire-five.vercel.app/">View Landing Page</a>
-    ·
-    <a href="https://github.com/rajveeerr/Safire/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/rajveeerr/Safire/issues">Request Feature</a>
+    creating a safer digital space for everyone.
+    
   </p>
 
-  <!-- BADGES -->
   <p align="center">
-    <img src="https://img.shields.io/github/stars/rajveeerr/Safire?style=for-the-badge" alt="GitHub stars">
-    <img src="https://img.shields.io/github/forks/rajveeerr/Safire?style=for-the-badge" alt="GitHub forks">
-    <img src="https://img.shields.io/github/license/rajveeerr/Safire?style=for-the-badge" alt="License">
+    <a href="https://github.com/rajveeerr/Safire/stargazers"><img src="https://img.shields.io/github/stars/rajveeerr/Safire?style=for-the-badge&logo=github&color=ce93d8" alt="Stars"></a>
+    <a href="https://github.com/rajveeerr/Safire/network/members"><img src="https://img.shields.io/github/forks/rajveeerr/Safire?style=for-the-badge&logo=github&color=81d4fa" alt="Forks"></a>
+    <a href="https://github.com/rajveeerr/Safire/blob/main/LICENSE"><img src="https://img.shields.io/github/license/rajveeerr/Safire?style=for-the-badge&color=a5d6a7" alt="License"></a>
+    <img src="https://img.shields.io/badge/Hackathon-WINNER-gold?style=for-the-badge&logo=trophy" alt="Hackathon Winner">
   </p>
+
+  <p align="center">
+    <a href="https://safire-five.vercel.app/"><strong>View the Website</strong></a>
+    ·
+    <a href="#-demo-video">Watch Demo</a>
+    ·
+    <a href="https://github.com/rajveeerr/Safire/issues/new?assignees=&labels=bug&template=bug_report.md&title=">Report a Bug</a>
+    ·
+    <a href="https://github.com/rajveeerr/Safire/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=">Request a Feature</a>
+  </p>
+
 </div>
 
 ---
 
-## Hackathon Achievements
+
+<!-- ## Hackathon Achievements
 
 Safire has been recognized for its innovative approach and social impact at multiple hackathons. We are proud to have won:
 
@@ -138,16 +147,24 @@ Safire has been recognized for its innovative approach and social impact at mult
 - **First Prize at HackWie**
 - **Best Impact Project at SheBuilds**
 
----
+--- -->
 
 ## Demo Video
 
-[![Watch the demo](extension/assets/screenshots/client-updated-ui.png)](https://vimeo.com/1059493429?share=copy)
-*(Click the image above to watch the full demo on Vimeo)*
+See Safire in action. Our demo shows how we seamlessly detect harassment, hide messages, and generate legal reports in real-time.
+
+<div align="center">
+  <a href="https://vimeo.com/1059493429" target="_blank">
+    <img src="extension/assets/screenshots/client-updated-ui.png" alt="Watch the Safire Demo" width="800">
+  </a>
+  <br>
+  <em>(Click the thumbnail to watch the full demo on Vimeo)</em>
+</div>
+
 
 ---
 
-## The Problem
+<!-- ## The Problem
 
 Online harassment is a critical social issue, disproportionately affecting women and marginalized communities. Existing anti-harassment tools are often inadequate:
 - **Reactive, not Proactive**: Users experience trauma *before* any action can betaken.
@@ -178,6 +195,30 @@ Safire is a browser extension that acts as your personal guardian against online
   <em>Click the image above to view the full presentation</em>
 </div>
 
+--- -->
+
+## Why Safire? The Problem with Online Safety
+
+Online harassment is more than just an inconvenience; it's a pervasive threat that silences voices and creates toxic digital environments. Existing tools are fundamentally broken—they're reactive, they escalate conflict, and they fail to empower victims. We knew there had to be a better way.
+
+| Before Safire ❌ | With Safire ✅ |
+|-------------------|----------------|
+| Victims see harassing content, causing immediate trauma. | Harmful messages are **proactively hidden** before they're seen. |
+| Blocking a harasser often leads to retaliation. | Our **Invisible Shield** works silently, keeping users safe. |
+| Gathering evidence for legal action is a manual nightmare. | **One-click legal reports** are automatically generated. |
+| You feel alone and unprotected. | **Community-driven tagging** warns others about known harassers. |
+
+<br>
+
+<div align="center">
+  <a href="https://drive.google.com/file/d/1XuOpAc2S8qeLWhWpD5HGfEtjNZ-d_To4/view?usp=share_link" target="_blank">  
+     <img width="1014" alt="Problem" src="https://github.com/user-attachments/assets/4fa39729-7c76-432f-9ed9-d555fb082abd" />
+
+  </a>
+  <br>
+  <em>Click the image above to view the full presentation</em>
+</div>
+
 ---
 
 ## Key Features
@@ -190,7 +231,7 @@ Safire is packed with features designed to provide comprehensive protection and 
 | 👻 **Invisible Shield**         | Automatically hides harassing messages without alerting the sender, preventing retaliation and further trauma.                       |
 | 📂 **Automated Evidence**      | Captures tamper-proof screenshots with metadata (timestamps, sender details) and stores them securely for 30 days.                     |
 | 📄 **One-Click Legal Reports** | Generates detailed, evidence-backed PDF reports formatted for submission to authorities or platform moderators.                        |
-|  community-driven **Harasser Tagging**    | A visible "Harasser" tag is added beside a user's name if they have been hidden by 5+ users, creating community awareness. |
+| 🏷️ Community-driven **Harasser Tagging**    | A visible "Harasser" tag is added beside a user's name if they have been hidden by 5+ users, creating community awareness. |
 | 📊 **User Dashboard**          | A central hub to view harassment analytics, manage hidden users, customize keywords, and access generated reports.                     |
 | 🌐 **Cross-Platform**          | Initially for LinkedIn, with plans to expand to Twitter, Instagram, WhatsApp, and more.                                                |
 
@@ -263,26 +304,17 @@ We went from initial low-fidelity wireframes to a polished final product in a sh
 
 ## Getting Started: Local Setup
 
-To get a local copy of **Safire** up and running on your machine, follow these simple steps.
+To get a local copy of Safire up and running on your machine, follow these simple steps.
 
----
+### Prerequisites
 
-### 🧰 Prerequisites
-
-Before you begin, make sure you have the following tools installed:
+Before you begin, ensure you have the following installed:
 
 - [**Node.js**](https://nodejs.org/) (v18 or higher recommended)
-- [**pnpm**](https://pnpm.io/installation) – Install globally using:
+- [**pnpm**](https://pnpm.io/installation) (Install globally with `npm install -g pnpm`)
+- [**MongoDB**](https://www.mongodb.com/try/download/community) (A running instance, either locally or on a cloud service like MongoDB Atlas)
 
-  ```sh
-  npm install -g pnpm
-    ```
-
-* [**MongoDB**](https://www.mongodb.com/try/download/community) – Either a local instance or a cloud setup (e.g., MongoDB Atlas)
-
----
-
-### 📦 Installation & Setup
+### Installation & Setup
 
 #### 1. Clone the Repository
 
@@ -292,8 +324,6 @@ Use Git to clone the Safire project:
 git clone https://github.com/rajveeerr/Safire.git
 cd Safire
 ```
-
----
 
 #### 2. Choose a Project Component
 
@@ -307,7 +337,6 @@ This is a **monorepo** that contains several independent components:
 | `server/`            | Main backend API                      | [`server/README.md`](server/README.md)                       |
 | `moderation-server/` | AI-based text moderation microservice | [`moderation-server/README.md`](moderation-server/README.md) |
 
----
 
 #### 3. Set Up a Component
 
@@ -327,7 +356,7 @@ Then follow the rest of the [extension's README](extension/README.md) to load it
 
 > 💡 Each component is self-contained and can be developed/tested independently.
 
-## Contributors
+<!-- ## Contributors
 
 This project was brought to life by the team "Smooth Operators".
 
@@ -338,14 +367,65 @@ This project was brought to life by the team "Smooth Operators".
 | **Divyansh Sharma**| [@divyansharma001](https://github.com/divyansharma001)|
 | **Anushree**       | [@ashree2118](https://github.com/ashree2118)       |
 
+--- -->
+
+
+## The Team
+
+This project was brought to life by the **"Smooth Operators"**.
+
+<table>
+<tr>
+<td align="center">
+  <a href="https://github.com/rajveeerr">
+    <img src="https://github.com/rajveeerr.png" width="100px;" alt="Rajveer Singh"/>
+    <br />
+    <sub><b>Rajveer Singh</b></sub>
+  </a>
+</td>
+<td align="center">
+  <a href="https://github.com/Anamika1608">
+    <img src="https://github.com/Anamika1608.png" width="100px;" alt="Anamika Aggarwal"/>
+    <br />
+    <sub><b>Anamika Aggarwal</b></sub>
+  </a>
+</td>
+<td align="center">
+  <a href="https://github.com/divyansharma001">
+    <img src="https://github.com/divyansharma001.png" width="100px;" alt="Divyansh Sharma"/>
+    <br />
+    <sub><b>Divyansh Sharma</b></sub>
+  </a>
+</td>
+<td align="center">
+  <a href="https://github.com/ashree2118">
+    <img src="https://github.com/ashree2118.png" width="100px;" alt="Anushree"/>
+    <br />
+    <sub><b>Anushree</b></sub>
+  </a>
+</td>
+</tr>
+</table>
+
 ---
 
-## 🌱 A Note on Our Development Journey
+> [!NOTE]
+> **A Note on Our Development Journey**
+> 
+> As a project born from the fast-paced and dynamic environment of multiple hackathons, our codebase was migrated between private repositories several times during its initial development. This was necessary to meet deadlines and adapt to evolving requirements.
+> 
+> Consequently, the commit history visible here doesn't fully capture the extensive, iterative process and the hundreds of commits that went into building Safire from the ground up. The current history reflects the final, polished state of the project as we prepared it for the public.
+> 
+> We share this note to provide context on our journey and to give a nod to the immense effort, late nights, and passion our team poured into bringing this idea to life.
 
-As a project born from the fast-paced and dynamic environment of hackathons, our codebase was migrated between private repositories several times during its initial development. This was necessary to meet deadlines and adapt to evolving requirements.
+---
 
-Consequently, the commit history visible here doesn't fully capture the extensive, iterative process—and the hundreds of commits—that went into building Safire from the ground up. The current history reflects the final, polished state of the project as we prepared it for the public.
+### Licensing
 
-We share this note to provide context on our journey and to give a nod to the immense effort, late nights, and passion our team poured into bringing this idea to life.
+Safire uses a dual licensing model to balance community transparency with commercial sustainability.
+
+* The **Dashboard** (`/dashboard`) is open-source under the permissive **MIT License**. 
+
+* The **Browser Extension** (`/extension`)and all other parts of the project, including the backend server and landing page is released under a **Proprietary License**. While its source code is visible for auditability, it cannot be used, copied, modified, or distributed without explicit permission.
 
 ---
