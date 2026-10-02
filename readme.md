@@ -149,6 +149,8 @@ Safire has been recognized for its innovative approach and social impact at mult
 
 --- -->
 
+**Write-up:** [How Safire works, by Rajveer Singh](https://rajveers.com/projects/safire)
+
 ## Demo Video
 
 See Safire in action. Our demo shows how we seamlessly detect harassment, hide messages, and generate legal reports in real-time.
