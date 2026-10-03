@@ -120,6 +120,17 @@ const config = {
     rateLimit: {
         windowMs: 60000,
         maxRequests: 1000
+    },
+    loadBalancer: {
+        // weighted | least-connections | fastest-response | round-robin | ab
+        strategy: process.env.LB_STRATEGY || 'least-connections',
+        // with "ab", every request is given one of two strategies, so both can be compared on live traffic
+        abStrategies: (process.env.LB_AB_STRATEGIES || 'least-connections,round-robin')
+            .split(',')
+            .map(name => name.trim()),
+        abSplit: Number(process.env.LB_AB_SPLIT || 0.5),
+        // how many recent latencies each strategy keeps for its percentiles
+        latencyWindow: 500
     }
 };
 
@@ -144,6 +155,7 @@ const servers = [
     healthy: true,
     activeConnections: 0,
     lastResponse: 0,
+    avgResponse: 0,
     failCount: 0,
     successCount: 0,
     totalRequests: 0,
@@ -155,8 +167,16 @@ const servers = [
 //   max: config.rateLimit.maxRequests
 // });
 
+// healthy, and its breaker is closed, half open, or open long enough to be tried again
+const isRoutable = (server) => {
+    if (!server.healthy) return false;
+    const state = getCircuitBreakerState(server.url);
+    return state.status !== 'OPEN' ||
+        Date.now() - state.lastError > config.circuitBreaker.resetTimeout;
+};
+
 const getWeightedServer = () => {
-    const healthyServers = servers.filter(server => server.healthy);
+    const healthyServers = servers.filter(isRoutable);
     if (healthyServers.length === 0) return null;
 
     const totalWeight = healthyServers.reduce((sum, server) => sum + server.weight, 0);
@@ -169,7 +189,7 @@ const getWeightedServer = () => {
 };
 
 const getLeastConnectionsServer = () => {
-    const healthyServers = servers.filter(server => server.healthy);
+    const healthyServers = servers.filter(isRoutable);
     if (healthyServers.length === 0) return null;
 
     return healthyServers.reduce((min, server) =>
@@ -177,35 +197,88 @@ const getLeastConnectionsServer = () => {
     );
 };
 
+// a server not measured yet reads 0, so it gets tried and measured first
 const getFastestResponseServer = () => {
-    const healthyServers = servers.filter(server => server.healthy);
+    const healthyServers = servers.filter(isRoutable);
     if (healthyServers.length === 0) return null;
 
     return healthyServers.reduce((fastest, server) =>
-        server.lastResponse < fastest.lastResponse ? server : fastest
+        server.avgResponse < fastest.avgResponse ? server : fastest
     );
 };
 
+let roundRobinIndex = 0;
+
+const getRoundRobinServer = () => {
+    const healthyServers = servers.filter(isRoutable);
+    if (healthyServers.length === 0) return null;
+
+    return healthyServers[roundRobinIndex++ % healthyServers.length];
+};
+
+const strategies = {
+    'weighted': getWeightedServer,
+    'least-connections': getLeastConnectionsServer,
+    'fastest-response': getFastestResponseServer,
+    'round-robin': getRoundRobinServer
+};
+
+const strategyNames = config.loadBalancer.strategy === 'ab' ?
+    config.loadBalancer.abStrategies :
+    [config.loadBalancer.strategy];
+
+strategyNames.forEach(name => {
+    if (!strategies[name]) {
+        console.log(`Unknown load balancing strategy "${name}", using least-connections`);
+    }
+});
+
+// what each strategy did with the requests it was given, for comparing them
+const strategyStats = new Map();
+
+const getStrategyStats = (name) => {
+    if (!strategyStats.has(name)) {
+        strategyStats.set(name, { requests: 0, successes: 0, failures: 0, latencies: [] });
+    }
+    return strategyStats.get(name);
+};
+
+const recordStrategy = (name, success, latency) => {
+    const stats = getStrategyStats(name);
+    stats.requests++;
+    if (success) {
+        stats.successes++;
+        stats.latencies.push(latency);
+        if (stats.latencies.length > config.loadBalancer.latencyWindow) stats.latencies.shift();
+    } else {
+        stats.failures++;
+    }
+};
+
+const pickStrategy = () => {
+    const { strategy, abStrategies, abSplit } = config.loadBalancer;
+    const name = strategy === 'ab' ?
+        (Math.random() < abSplit ? abStrategies[0] : abStrategies[1]) :
+        strategy;
+    return strategies[name] ? name : 'least-connections';
+};
+
 const checkServerHealth = async (server) => {
-    const startTime = Date.now();
     try {
         const response = await axios.get(`${server.url}/health`, {
             timeout: config.healthCheck.timeout
         });
 
-        const responseTime = Date.now() - startTime;
-        server.lastResponse = responseTime;
-
         if (response.status === 200) {
             server.successCount++;
             server.failCount = 0;
-            server.healthy = server.successCount >= config.healthCheck.healthyThreshold;
+            if (server.successCount >= config.healthCheck.healthyThreshold) server.healthy = true;
         }
         return true;
     } catch (error) {
         server.failCount++;
         server.successCount = 0;
-        server.healthy = server.failCount < config.healthCheck.unhealthyThreshold;
+        if (server.failCount >= config.healthCheck.unhealthyThreshold) server.healthy = false;
         return false;
     }
 };
@@ -248,12 +321,11 @@ const updateCircuitBreaker = (serverUrl, success) => {
 const handleRequest = async (server, req) => {
     const circuitState = getCircuitBreakerState(server.url);
 
+    // open stays open until the reset timeout has passed since the last error, then one more try
     if (circuitState.status === 'OPEN') {
         const timeSinceError = Date.now() - circuitState.lastError;
-        const timeSinceSuccess = Date.now() - circuitState.lastSuccess;
 
-        if (timeSinceError > config.circuitBreaker.resetTimeout ||
-            timeSinceSuccess < config.circuitBreaker.resetTimeout * 2) {
+        if (timeSinceError > config.circuitBreaker.resetTimeout) {
             circuitState.status = 'HALF_OPEN';
         } else {
             throw new Error('Circuit breaker is OPEN');
@@ -261,14 +333,17 @@ const handleRequest = async (server, req) => {
     }
 
     server.activeConnections++;
+    const startTime = Date.now();
 
     try {
         const response = await axios.post(`${server.url}/detect`, req.body, {
-            timeout: 30000,
-            retry: 2,
-            retryDelay: 1000
+            timeout: 30000
         });
 
+        // real request latency, smoothed, for the fastest-response strategy and /metrics
+        const latency = Date.now() - startTime;
+        server.lastResponse = latency;
+        server.avgResponse = server.avgResponse ? server.avgResponse * 0.8 + latency * 0.2 : latency;
         server.totalRequests++;
         updateCircuitBreaker(server.url, true);
 
@@ -307,7 +382,8 @@ router.post('/detect-harassment', async (req, res) => {
             platform: req.body.platform.toLowerCase()
         });
         
-        const cachedData = await redisClient.get(cacheKey);
+        // a reconnecting client would queue the read and hold the request, so skip the cache then
+        const cachedData = redisClient && redisClient.isReady ? await redisClient.get(cacheKey) : null;
         if (cachedData) {
             return res.json(JSON.parse(cachedData));
         }
@@ -315,29 +391,38 @@ router.post('/detect-harassment', async (req, res) => {
         console.log("Redis cache error: " + cacheError);
     }
 
-    for (const strategy of [getWeightedServer, getLeastConnectionsServer, getFastestResponseServer]) {
-        const availableServers = servers.filter(server => {
-            const state = getCircuitBreakerState(server.url);
-            return server.healthy || state.status === 'HALF_OPEN';
-        });
+    const availableServers = servers.filter(server => {
+        const state = getCircuitBreakerState(server.url);
+        return server.healthy || state.status === 'HALF_OPEN';
+    });
 
-        for (const server of availableServers) {
-            try {
-                result = await handleRequest(server, req);                                
-                server.errorRate = Math.max(0, server.errorRate - 0.1);
-                server.weight = Math.min(1, server.weight + 0.1);
+    // the strategy picks who goes first, the rest are the failover, each tried once
+    const strategyName = pickStrategy();
+    const first = strategies[strategyName]();
+    const ordered = first ?
+        [first, ...availableServers.filter(server => server !== first)] :
+        availableServers;
+    const startTime = Date.now();
 
-                return res.json(result);
-            } catch (error) {
-                errors.push(`${server.url}: ${error.message}`);
-                server.errorRate = Math.min(1, server.errorRate + 0.1);
-                server.weight = Math.max(0.1, server.weight - 0.1);
+    res.set('x-lb-strategy', strategyName);
 
-                continue;
-            }
+    for (const server of ordered) {
+        try {
+            result = await handleRequest(server, req);
+            server.errorRate = Math.max(0, server.errorRate - 0.1);
+            server.weight = Math.min(1, server.weight + 0.1);
+
+            recordStrategy(strategyName, true, Date.now() - startTime);
+            res.set('x-served-by', server.url);
+            return res.json(result);
+        } catch (error) {
+            errors.push(`${server.url}: ${error.message}`);
+            server.errorRate = Math.min(1, server.errorRate + 0.1);
+            server.weight = Math.max(0.1, server.weight - 0.1);
         }
     }
 
+    recordStrategy(strategyName, false);
     res.status(503).json({
         error: 'All servers failed to process request',
         details: errors,
@@ -351,7 +436,7 @@ router.get('/metrics', (req, res) => {
         healthy: server.healthy,
         activeConnections: server.activeConnections,
         totalRequests: server.totalRequests,
-        averageResponseTime: server.lastResponse,
+        averageResponseTime: Math.round(server.avgResponse),
         errorRate: server.errorRate,
         weight: server.weight,
         circuitBreakerStatus: getCircuitBreakerState(server.url).status
@@ -360,15 +445,42 @@ router.get('/metrics', (req, res) => {
     res.json(metrics);
 });
 
+// the A/B view: each strategy's share of traffic, success rate and latency on the same live requests
+router.get('/metrics/strategies', (req, res) => {
+    const { strategy, abStrategies, abSplit } = config.loadBalancer;
+    const results = Object.fromEntries(
+        Array.from(strategyStats.entries()).map(([name, stats]) => [
+            name,
+            {
+                requests: stats.requests,
+                successes: stats.successes,
+                failures: stats.failures,
+                successRate: stats.requests ?
+                    (stats.successes / stats.requests * 100).toFixed(2) + '%' : null,
+                latency: stats.latencies.length ?
+                    performanceMetrics.calculateStats(stats.latencies) : null
+            }
+        ])
+    );
+
+    res.json({
+        mode: strategy,
+        ...(strategy === 'ab' && { abStrategies, abSplit }),
+        strategies: results
+    });
+});
+
 
 const performanceMetrics = {
     calculatePercentile: (values, percentile) => {
-        const sorted = values.sort((a, b) => a - b);
+        const sorted = [...values].sort((a, b) => a - b);
         const index = Math.ceil((percentile / 100) * sorted.length) - 1;
         return sorted[index];
     },
-    
-    calculateStats: (values) => {
+
+    // sorted copy first, so the median is the middle value and the caller's array is untouched
+    calculateStats: (input) => {
+        const values = [...input].sort((a, b) => a - b);
         const avg = values.reduce((a, b) => a + b, 0) / values.length;
         const variance = values.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / values.length;
         return {
@@ -410,11 +522,8 @@ router.get('/test-servers', async (req, res) => {
         responseTimes: [],
         errors: [],
         loadBalancerMetrics: {
-            strategyUsage: {
-                weighted: 0,
-                leastConnections: 0,
-                fastestResponse: 0
-            }
+            // filled from each response's x-lb-strategy header
+            strategyUsage: {}
         }
     };
 
@@ -447,7 +556,13 @@ router.get('/test-servers', async (req, res) => {
             
             const responseTime = Date.now() - requestStart;
             testResults.responseTimes.push(responseTime);
-            
+
+            const strategy = result.headers['x-lb-strategy'];
+            if (strategy) {
+                const usage = testResults.loadBalancerMetrics.strategyUsage;
+                usage[strategy] = (usage[strategy] || 0) + 1;
+            }
+
             const serverUrl = result.headers['x-served-by'];
             if (serverUrl && testResults.serverMetrics.has(serverUrl)) {
                 const serverMetrics = testResults.serverMetrics.get(serverUrl);
@@ -504,6 +619,7 @@ router.get('/test-servers', async (req, res) => {
                 averageConcurrency: (testResults.overview.totalRequests / (duration * 1000 / interval)).toFixed(2)
             },
             responseTimeMetrics: performanceMetrics.calculateStats(testResults.responseTimes),
+            loadBalancerMetrics: testResults.loadBalancerMetrics,
             serverMetrics: Object.fromEntries(
                 Array.from(testResults.serverMetrics.entries()).map(([url, metrics]) => [
                     url,

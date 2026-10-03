@@ -53,7 +53,7 @@ async function getImageAsBase64(screenshot) {
   async function generatePDF(reportData, reportId) {
 
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: 'new',
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -150,7 +150,7 @@ async function getImageAsBase64(screenshot) {
       console.error('PDF generation error:', error);
       throw error;
     } finally {
-      // await browser.close();
+      await browser.close();
     }
 }
   

@@ -498,9 +498,13 @@ router.get('/saved-reports', authMiddleware, async (req, res) => {
   }
 });
 
-router.get('/view-report/:reportId', async (req, res) => {
+// only the person who filed a report can download it
+router.get('/view-report/:reportId', authMiddleware, async (req, res) => {
     try {
-        const report = await Report.findById(req.params.reportId);
+        const report = await Report.findOne({ _id: req.params.reportId, reportedBy: req.userId });
+        if (!report) {
+            return res.status(404).send('Report not found');
+        }
         const pdfBuffer = await generatePDF(report.toObject(), report._id);
         
         res.setHeader('Content-Type', 'application/pdf');
